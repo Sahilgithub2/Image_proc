@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <title>Image Processing Tool</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>Image ResizerX</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('reload_page') }}">Home</a></li>
+                <li><a href="#aboutt">About</a></li>
+                <li><a href="#servicess">Services</a></li>
+                <li><a href="#contacts">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <h2>Image Processing Made Easy</h2>
+        <p>Resize, crop, and enhance your images with our powerful online tool.</p>
+        <a href="#image_processing" class="cta-button" id="getstarted">Get Started</a>
+    </section>
+    <!-- About -->
+    <section class="about" id="aboutt">
+        <div class="about-content">
+            <h2 align="center"><b>About Us</b></h2>
+            <p><b>Welcome to Image Tool, your all-in-one solution for image processing and enhancement. Our mission is to provide you with powerful tools that make image editing a breeze.</p>
+            <p>With our user-friendly interface, you can resize, crop, rotate, and enhance your images with just a few clicks. Whether you're a professional photographer or someone who wants to improve their social media posts, Image Tool has you covered.</p>
+            <p>We're dedicated to delivering top-notch performance and excellent results. Join our community of satisfied users and take your images to the next level with Image Tool.</b></p>
+        </div>
+    </section>
+<!-- Image Processing -->
+    <div class="container my-4" id="image_processing">
+        <h2>Image Processing</h2>
+        <form action="/edit" method="post" enctype="multipart/form-data">
+          <div class="mb-4">
+            <label for="formFile" class="form-label">Select An Image</label>
+            <input class="form-control" type="file" name="file" id="formFile">
+          </div>
+          <div class="mb-3">
+          <div class="form-floating">
+            <select name="operation" class="form-select" id="floatingSelect" aria-label="Floating label select example">
+              <option selected>Choose An Operation</option>
+              <option value="cpng">Convert To PNG</option>
+              <option value="cgray">Convert To Grayscale</option>
+              <option value="cwebp">Convert To WebP</option>
+              <option value="cjpg">Convert To JPG</option>
+            </select>
+            <!-- <label for="floatingSelect">Select An Editing Operation</label> -->
+          </div>
+            <button type="submit" class="btn btn-success mt-3">Submit</button>
+          </div>
+        </form>
+    
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          {% if category == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <strong>Success!</strong>{{ message | safe }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% elif category == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong>Error!</strong>{{ message | safe }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% else %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+              <strong>Info!</strong>{{ message | safe }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+<!-- Image Resizing -->
+
+<div class="container my-4">
+    <h2>Image Resizing</h2>
+    <a href="#resizing"></a>
+    <form action="/resize" method="post" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label for="inputImage" class="form-label">Select An Image</label>
+            <input class="form-control" type="file" name="input-image" id="inputImage" accept="image/*" required>
+        </div>
+        <div class="mb-3">
+            <label for="width" class="form-label">Width</label>
+            <input class="form-control" type="number" name="width" id="width" required>
+        </div>
+        <div class="mb-3">
+            <label for="height" class="form-label">Height</label>
+            <input class="form-control" type="number" name="height" id="height" required>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Resize Image</button>
+    </form>
+</div>
+
+
+{% if resized_image %}
+<h2>Resized Image</h2>
+<img src="{{ url_for('static', filename=resized_image) }}" alt="Resized Image">
+{% endif %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+    <div class="flash-messages">
+        {% for message in messages %}
+            <!-- <div class="alert {% if 'error' in message %}alert-danger{% elif 'success' in message %}alert-success{% endif %}"> -->
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Success!</strong>{{ message | safe }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+            <!-- </div> -->
+            {% if download_link %}
+        <div class="download-section">
+            <p class="download-text">Download Resized Image:</p>
+            <a href="{{ url_for('download', filename=resized_image) }}" class="download-link" download>Click Here</a>
+        </div>
+    {% endif %}
+        {% endfor %}
+    </div>
+    
+{% endif %}
+{% endwith %}
+
+<!-- Services -->
+    <section class="features" id="servicess">
+        <div class="feature">
+            <img src="https://play-lh.googleusercontent.com/1cf6sZ503u5W_L4OhrJs-ocOqnXJ71NkKi9J4_IM1WtZozPZOns_NVjciC6SvsYykxox=w240-h480-rw">
+            <h3>Resize Images</h3>
+            <p>Quickly resize your images to the perfect dimensions.</p>
+        </div>
+        <div class="feature">
+            <img src="https://cdn.icon-icons.com/icons2/1369/PNG/512/-crop-rotate_90625.png">
+            <h3>Crop and Rotate</h3>
+            <p>Crop and rotate images to highlight the best parts.</p>
+        </div>
+        <div class="feature">
+            <img src="https://img1.wsimg.com/isteam/ip/3738d1f8-f418-4913-861e-795ae7affb48/Quality-Assurance-logo.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,cg:true">
+            <h3>Enhance Quality</h3>
+            <p>Improve image quality with our advanced enhancement tools.</p>
+        </div>
+    </section>
+    <!-- Contact Form-->
+    <section class="contact" id="contacts">
+        <h2>Contact Us</h2>
+        <p>If you have any questions or inquiries, feel free to get in touch with us.</p>
+        <form action="#" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+            
+            <button type="submit" id="Send-button">Send Message</button>
+            <script>
+                const sendButton = document.getElementById('send-button');
+                if (sendButton) {
+                    sendButton.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        alert("Your message has been sent!");
+                    });
+                }
+            </script>
+        </form>
+    </section>    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Image Tool. All rights reserved.</p>
+    </footer>
+</body>
+</html>
